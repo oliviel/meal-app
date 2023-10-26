@@ -1,12 +1,16 @@
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import { Image, Text, View, StyleSheet, ScrollView } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import MealStats from "../components/MealStats";
 import SubTitle from "../components/SubTitle";
 import List from "../components/List";
-import { MEALS } from "../dummy-data";
-import { RootStackParamList } from "../App";
 import IconButton from "../components/IconButton";
+// import { FavoritesContext } from "../store/context/FavoritesContext";
+import { addFavorite, removeFavorite } from "../store/redux/favoritesSlice";
+import { RootStackParamList } from "../App";
+import { RootState } from "../store/redux/store";
+import { MEALS } from "../dummy-data";
 
 type RouteNativeProps = NativeStackScreenProps<
   RootStackParamList,
@@ -14,17 +18,26 @@ type RouteNativeProps = NativeStackScreenProps<
 >;
 
 const MealDetail = ({ route, navigation }: RouteNativeProps) => {
+  const dispatch = useDispatch();
+  const { ids } = useSelector((state: RootState) => state.favoritesMeals);
+  // const { ids, addFavorite, removeFavorite } = useContext(FavoritesContext);
   const mealId = route.params.mealId;
   const meal = MEALS.find((m) => m.id === mealId);
+  const mealIsFavorite = ids.includes(mealId);
+  const InconName = mealIsFavorite ? "star" : "star-outline";
 
   function handleIconPress() {
-    console.log("taped");
+    if (!mealIsFavorite) {
+      dispatch(addFavorite({ mealId }));
+    } else {
+      dispatch(removeFavorite({ mealId }));
+    }
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => {
-        return <IconButton />;
+        return <IconButton iconName={InconName} onPress={handleIconPress} />;
       },
     });
   }, [navigation, handleIconPress]);

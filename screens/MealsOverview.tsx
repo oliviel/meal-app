@@ -1,10 +1,9 @@
 import { useLayoutEffect } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
 // import { useRoute } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import { MEALS, CATEGORIES } from "../dummy-data";
-import MealItem from "../components/MealItem";
+import MealsList from "../components/MealsList";
 
 type RouteNativeProps = NativeStackScreenProps<
   RootStackParamList,
@@ -32,25 +31,7 @@ const MealsOverview = ({ route, navigation }: RouteNativeProps) => {
     });
   }, [categoryId, navigation]);
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        data={displayedMeals}
-        renderItem={({ item }) => (
-          <MealItem meal={item} onPress={handleOnpress} />
-        )}
-      />
-    </View>
-  );
+  return <MealsList meals={displayedMeals} onPress={handleOnpress} />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-});
 
 export default MealsOverview;
